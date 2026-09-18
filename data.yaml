@@ -1,0 +1,13 @@
+train: train/images
+val: valid/images
+test: test/images
+
+nc: 2
+names: ['erva_daninha', 'planta']
+
+roboflow:
+  workspace: giulias-workspace-obsim
+  project: agro-vision-myjqd
+  version: 2
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/giulias-workspace-obsim/agro-vision-myjqd/dataset/2
