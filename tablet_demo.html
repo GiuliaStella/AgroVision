@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0b2518">
+    <title>AgroVision | Monitoramento</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --green-dark: #0b4a2a;
+            --green: #4c9a2a;
+            --green-light: #e8f3e7;
+            --bg: #f2f5f1;
+            --text: #20352a;
+            --muted: #77847b;
+            --border: #e1e8e0;
+            --red: #bd4545;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Roboto, Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        header {
+            min-height: 76px;
+            background: var(--green-dark);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 28px;
+            gap: 18px;
+            box-shadow: 0 3px 12px #102b1a20;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+
+        .brand-name {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: .5px;
+            line-height: 1;
+        }
+
+        .brand-name span {
+            color: #82c85b;
+        }
+
+        .brand-subtitle {
+            margin-top: 5px;
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: #c5d9c9;
+            text-transform: uppercase;
+        }
+
+        .connection {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #d6e8d7;
+        }
+
+        .dot {
+            width: 9px;
+            height: 9px;
+            background: #e0b94f;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .dot.online {
+            background: #7ed957;
+        }
+
+        .dot.offline {
+            background: #ed7777;
+        }
+
+        main {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 22px 26px;
+        }
+
+        .page-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            margin-bottom: 17px;
+            gap: 12px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 23px;
+            font-weight: 700;
+        }
+
+        .page-heading p {
+            margin: 6px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.85fr) minmax(260px, .8fr);
+            gap: 20px;
+            align-items: stretch;
+        }
+
+        .panel {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: 0 4px 15px #173d2110;
+            min-width: 0;
+        }
+
+        .panel-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .panel-title h2 {
+            font-size: 16px;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .live-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--green-dark);
+            background: var(--green-light);
+            border-radius: 20px;
+            padding: 6px 10px;
+            white-space: nowrap;
+        }
+
+        .video-frame {
+            position: relative;
+            width: 100%;
+            height: clamp(220px, 42vh, 440px);
+            background: #101b14;
+            border-radius: 11px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+.video-frame {
+  position: relative;
+  width: 100%;
+  height: clamp(220px, 42vh, 440px);
+  background: #101b14;
+  border-radius: 11px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+        .video-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: #d6e0d8;
+            text-align: center;
+            padding: 18px;
+            pointer-events: none;
+        }
+
+        .video-placeholder .camera-icon {
+            font-size: 36px;
+        }
+
+        .video-placeholder p {
+            margin: 0;
+            font-size: 13px;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .metric {
+            padding: 13px 14px;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            background: #fbfcfa;
+            min-width: 0;
+        }
+
+        .metric-top {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .metric-icon {
+            font-size: 16px;
+        }
+
+        .metric-value {
+            font-size: clamp(23px, 2.5vw, 32px);
+            font-weight: 800;
+            color: var(--green-dark);
+            margin-top: 9px;
+            line-height: 1.1;
+        }
+
+        .metric-value.fps {
+            color: #477f38;
+        }
+
+        .metric-note {
+            font-size: 10px;
+            color: var(--muted);
+            margin-top: 6px;
+        }
+
+        .control-panel {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .control-intro {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.5;
+            margin: -5px 0 17px;
+        }
+
+        .state-card {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            background: #f5f8f4;
+            border: 1px solid var(--border);
+            padding: 13px;
+            border-radius: 11px;
+            margin-bottom: 16px;
+        }
+
+        .state-icon {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            background: var(--green-light);
+            border-radius: 10px;
+            font-size: 18px;
+        }
+
+        .state-label {
+            color: var(--muted);
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+
+        .state-value {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .actions-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--muted);
+            margin-bottom: 3px;
+        }
+
+        button {
+            border: 0;
+            border-radius: 10px;
+            min-height: 48px;
+            padding: 13px 14px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: filter .15s, transform .15s;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        button:hover {
+            filter: brightness(.96);
+        }
+
+        button:active {
+            transform: scale(.99);
+        }
+
+        button:disabled {
+            opacity: .55;
+            cursor: wait;
+        }
+
+        .btn-start {
+            background: var(--green);
+            color: white;
+        }
+
+        .btn-stop {
+            background: #fff0ef;
+            color: var(--red);
+            border: 1px solid #f0d5d3;
+        }
+
+        .btn-laser {
+            background: #202d24;
+            color: white;
+            border: 1px solid #35493a;
+        }
+
+        .btn-laser.active {
+            background: #8c3434;
+            border-color: #8c3434;
+        }
+
+        .btn-icon {
+            display: inline-block;
+            margin-right: 7px;
+            font-size: 15px;
+        }
+
+        .notice {
+            border-radius: 9px;
+            background: #f7f8f6;
+            color: var(--muted);
+            padding: 11px;
+            font-size: 11px;
+            line-height: 1.5;
+            margin-top: 14px;
+            overflow-wrap: anywhere;
+        }
+
+        #resultado {
+            font-size: 12px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+            margin: 12px 0 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 13px 15px 20px;
+            color: #849087;
+            font-size: 11px;
+        }
+
+        @media (orientation: landscape) and (min-width: 700px) {
+            main {
+                padding-top: 16px;
+                padding-bottom: 12px;
+            }
+
+            .page-heading {
+                margin-bottom: 12px;
+            }
+
+            .panel {
+                padding: 15px;
+            }
+
+            .video-frame {
+                height: clamp(190px, 38vh, 340px);
+            }
+
+            .metrics {
+                gap: 9px;
+                margin-top: 10px;
+            }
+
+            .metric {
+                padding: 10px 11px;
+            }
+
+            .metric-value {
+                margin-top: 6px;
+            }
+
+            .state-card {
+                margin-bottom: 10px;
+                padding: 10px;
+            }
+
+            button {
+                min-height: 43px;
+                margin-top: 8px;
+            }
+        }
+
+        @media (max-width: 700px) {
+            header {
+                padding: 12px 16px;
+            }
+
+            .brand-name {
+                font-size: 23px;
+            }
+
+            .connection {
+                font-size: 11px;
+            }
+
+            main {
+                padding: 16px 12px;
+            }
+
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .video-frame {
+                height: 34vh;
+                min-height: 190px;
+            }
+
+            .metrics {
+                gap: 7px;
+            }
+
+            .metric {
+                padding: 10px 8px;
+            }
+
+            .metric-top {
+                font-size: 10px;
+                gap: 4px;
+            }
+
+            .metric-note {
+                font-size: 9px;
+            }
+        }
+
+        @media (max-height: 520px) and (orientation: landscape) {
+            header {
+                min-height: 60px;
+                padding-top: 7px;
+                padding-bottom: 7px;
+            }
+
+            .logo {
+                width: 38px;
+                height: 38px;
+            }
+
+            .brand-name {
+                font-size: 23px;
+            }
+
+            main {
+                padding-top: 10px;
+            }
+
+            .page-heading h1 {
+                font-size: 19px;
+            }
+
+            .page-heading p {
+                margin-top: 3px;
+            }
+
+            .panel-title {
+                margin-bottom: 9px;
+            }
+
+            .video-frame {
+                height: 33vh;
+                min-height: 145px;
+            }
+
+            .metric-value {
+                font-size: 23px;
+            }
+
+            .metric-note {
+                display: none;
+            }
+
+            footer {
+                padding: 7px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="brand">
+            <!-- O logo deve ser colocado na pasta do projeto e servido pela rota /logo -->
+            <img class="logo" src="/assets/logo.png" alt="Logo AgroVision">
+            <div>
+                <div class="brand-name">AGRO<span>VISION</span></div>
+                <div class="brand-subtitle">Agricultura inteligente</div>
+            </div>
+        </div>
+
+        <div class="connection">
+            <span class="dot" id="dot"></span>
+            <span id="conexao">Verificando servidor...</span>
+        </div>
+    </header>
+
+    <main>
+        <div class="page-heading">
+            <div>
+                <h1>Painel de monitoramento</h1>
+                <p>Visualização e controle do reconhecimento de plantas.</p>
+            </div>
+        </div>
+
+        <div class="layout">
+            <section class="panel">
+                <div class="panel-title">
+                    <h2>Reconhecimento em tempo real</h2>
+                    <span class="live-label">● AO VIVO</span>
+                </div>
+
+                <div class="video-frame">
+                    <img id="video" src="/video" alt="Vídeo da câmera">
+                    <div class="video-placeholder" id="placeholder">
+                        <span class="camera-icon">📷</span>
+                        <p>Carregando transmissão da câmera...</p>
+                    </div>
+                </div>
+
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-top">
+                            <span class="metric-icon">🌿</span>
+                            <span>Planta</span>
+                        </div>
+                        <div class="metric-value" id="plantas">—</div>
+                        <div class="metric-note">Detecções identificadas</div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-top">
+                            <span class="metric-icon">🍃</span>
+                            <span>Erva daninha</span>
+                        </div>
+                        <div class="metric-value" id="ervas">—</div>
+                        <div class="metric-note">Detecções identificadas</div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-top">
+                            <span class="metric-icon">⚡</span>
+                            <span>FPS</span>
+                        </div>
+                        <div class="metric-value fps" id="fps">—</div>
+                        <div class="metric-note">Quadros por segundo</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel control-panel">
+                <div class="panel-title">
+                    <h2>Controle do sistema</h2>
+                </div>
+                <p class="control-intro">
+                    Gerencie o reconhecimento e acompanhe o estado do sistema.
+                </p>
+
+                <div class="state-card">
+                    <div class="state-icon">🖥️</div>
+                    <div>
+                        <div class="state-label">Estado do servidor</div>
+                        <div class="state-value" id="estado">Verificando...</div>
+                    </div>
+                </div>
+
+                <div class="actions-label">AÇÕES</div>
+
+                <button class="btn-start" id="iniciar" onclick="comando('/start')">
+                    <span class="btn-icon">▶</span> INICIAR RECONHECIMENTO
+                </button>
+
+                <button class="btn-stop" id="parar" onclick="comando('/stop')">
+                    <span class="btn-icon">■</span> PARAR RECONHECIMENTO
+                </button>
+
+                <button class="btn-laser" id="laser" onclick="alternarLaser()">
+                    <span class="btn-icon">◎</span> ATIVAR LASER
+                </button>
+
+                <div class="notice" id="avisoLaser">
+                    Laser: interface demonstrativa. O botão ainda não controla o hardware.
+                </div>
+
+                <p id="resultado" role="status"></p>
+            </section>
+        </div>
+    </main>
+
+    <footer>AGROVISION · Sistema de monitoramento inteligente</footer>
+
+    <script>
+        const $ = id => document.getElementById(id);
+
+        let laserVisualAtivo = false;
+        let comandoEmAndamento = false;
+
+        $('video').addEventListener('load', () => {
+            $('placeholder').style.display = 'none';
+        });
+
+        $('video').addEventListener('error', () => {
+            $('placeholder').style.display = 'flex';
+            $('placeholder').querySelector('p').textContent =
+                'Vídeo indisponível. Verifique a câmera e o servidor.';
+        });
+
+        function estadoConexao(online, texto) {
+            $('conexao').textContent = texto;
+            $('dot').className = 'dot ' + (online ? 'online' : 'offline');
+        }
+
+        async function atualizar() {
+            try {
+                const resposta = await fetch('/status', { cache: 'no-store' });
+                if (!resposta.ok) throw new Error('HTTP ' + resposta.status);
+
+                const dados = await resposta.json();
+
+                estadoConexao(true, 'Servidor conectado');
+                $('estado').textContent = dados.status ?? 'Conectado';
+
+                $('plantas').textContent =
+                    dados.planta ?? dados.plantas ?? '0';
+
+                $('ervas').textContent =
+                    dados.erva_daninha ?? dados.ervas ?? '0';
+
+                $('fps').textContent = dados.fps ?? '—';
+            } catch (erro) {
+                estadoConexao(false, 'Servidor offline');
+                $('estado').textContent = 'Sem conexão';
+            }
+        }
+
+        async function comando(caminho) {
+            if (comandoEmAndamento) return;
+
+            comandoEmAndamento = true;
+            $('iniciar').disabled = true;
+            $('parar').disabled = true;
+            $('resultado').textContent = 'Enviando comando...';
+
+            try {
+                const resposta = await fetch(caminho, { method: 'POST' });
+                if (!resposta.ok) throw new Error('HTTP ' + resposta.status);
+
+                $('resultado').textContent =
+                    caminho === '/start'
+                        ? 'Comando de início enviado.'
+                        : 'Comando de parada enviado.';
+
+                await atualizar();
+            } catch (erro) {
+                $('resultado').textContent =
+                    'Falha no comando. Confira o servidor Python.';
+            } finally {
+                comandoEmAndamento = false;
+                $('iniciar').disabled = false;
+                $('parar').disabled = false;
+            }
+        }
+
+        // Apenas muda a aparência. Não aciona nenhum laser físico.
+        function alternarLaser() {
+            laserVisualAtivo = !laserVisualAtivo;
+
+            const botao = $('laser');
+
+            if (laserVisualAtivo) {
+                botao.classList.add('active');
+                botao.innerHTML =
+                    '<span class="btn-icon">◎</span> LASER SELECIONADO';
+                $('avisoLaser').textContent =
+                    'Demonstração visual: o laser físico ainda não foi acionado.';
+            } else {
+                botao.classList.remove('active');
+                botao.innerHTML =
+                    '<span class="btn-icon">◎</span> ATIVAR LASER';
+                $('avisoLaser').textContent =
+                    'Laser: interface demonstrativa. O botão ainda não controla o hardware.';
+            }
+        }
+
+        atualizar();
+        setInterval(atualizar, 1000);
+    </script>
+</body>
+
+</html>
